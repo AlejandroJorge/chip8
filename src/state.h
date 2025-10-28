@@ -2,6 +2,7 @@
 #define STATE_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define UPS 0x600 // User Program Start, ETI 660
 #define EOR 0xFFF // End of RAM

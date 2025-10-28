@@ -42,138 +42,138 @@ enum Opcodes {
 
 // CLS — 00E0
 // Clears the display buffer.
-void opcode_00e0_handler(void);
+void opcode_00e0_handler(uint16_t opcode);
 
 // RET — 00EE
 // Restores the return address from the stack.
-void opcode_00ee_handler(void);
+void opcode_00ee_handler(uint16_t opcode);
 
 // JMP — 1NNN
 // Jumps directly to address NNN.
-void opcode_1nnn_handler(uint16_t n);
+void opcode_1nnn_handler(uint16_t opcode);
 
 // CALL NNN — 2NNN
 // Jumps to subroutine and stores the return address.
-void opcode_2nnn_handler(uint16_t n);
+void opcode_2nnn_handler(uint16_t opcode);
 
 // SE VX, NN — 3XNN
 // Skips next instruction when register equals NN.
-void opcode_3xnn_handler(uint8_t n_register, uint8_t n);
+void opcode_3xnn_handler(uint16_t opcode);
 
 // SNE VX, NN — 4XNN
 // Skips next instruction when register differs from NN.
-void opcode_4xnn_handler(uint8_t n_register, uint8_t n);
+void opcode_4xnn_handler(uint16_t opcode);
 
 // SE VX, VY — 5XY0
 // Skips next instruction when registers are equal.
-void opcode_5xy0_handler(uint8_t n1_register, uint8_t n2_register);
+void opcode_5xy0_handler(uint16_t opcode);
 
 // LD VX, NN — 6XNN
 // Loads immediate NN into register VX.
-void opcode_6xnn_handler(uint8_t n_register, uint8_t n);
+void opcode_6xnn_handler(uint16_t opcode);
 
 // ADD VX, NN — 7XNN
 // Adds immediate NN to register VX.
-void opcode_7xnn_handler(uint8_t n_register, uint8_t n);
+void opcode_7xnn_handler(uint16_t opcode);
 
 // LD VX, VY — 8XY0
 // Copies VY into VX.
-void opcode_8xy0_handler(uint8_t n1_register, uint8_t n2_register);
+void opcode_8xy0_handler(uint16_t opcode);
 
 // OR VX, VY — 8XY1
 // Performs bitwise OR between VX and VY.
-void opcode_8xy1_handler(uint8_t n1_register, uint8_t n2_register);
+void opcode_8xy1_handler(uint16_t opcode);
 
 // AND VX, VY — 8XY2
 // Performs bitwise AND between VX and VY.
-void opcode_8xy2_handler(uint8_t n1_register, uint8_t n2_register);
+void opcode_8xy2_handler(uint16_t opcode);
 
 // XOR VX, VY — 8XY3
 // Performs bitwise XOR between VX and VY.
-void opcode_8xy3_handler(uint8_t n1_register, uint8_t n2_register);
+void opcode_8xy3_handler(uint16_t opcode);
 
 // ADD VX, VY — 8XY4
 // Adds VY to VX and sets VF on overflow.
-void opcode_8xy4_handler(uint8_t n1_register, uint8_t n2_register);
+void opcode_8xy4_handler(uint16_t opcode);
 
 // SUB VX, VY — 8XY5
 // Subtracts VY from VX and sets VF when borrow does not occur.
-void opcode_8xy5_handler(uint8_t n1_register, uint8_t n2_register);
+void opcode_8xy5_handler(uint16_t opcode);
 
 // SHR VX {, VY} — 8XY6
 // Shifts VX right and moves LSB into VF.
-void opcode_8xy6_handler(uint8_t n1_register, uint8_t n2_register);
+void opcode_8xy6_handler(uint16_t opcode);
 
 // SUBN VX, VY — 8XY7
 // Sets VX to VY minus VX and updates VF for borrow.
-void opcode_8xy7_handler(uint8_t n1_register, uint8_t n2_register);
+void opcode_8xy7_handler(uint16_t opcode);
 
 // SHL VX {, VY} — 8XYE
 // Shifts VX left and moves MSB into VF.
-void opcode_8xye_handler(uint8_t n1_register, uint8_t n2_register);
+void opcode_8xye_handler(uint16_t opcode);
 
 // SNE VX, VY — 9XY0
 // Skips next instruction when registers differ.
-void opcode_9xy0_handler(uint8_t n1_register, uint8_t n2_register);
+void opcode_9xy0_handler(uint16_t opcode);
 
 // LD I, NNN — ANNN
 // Loads address NNN into the index register.
-void opcode_annn_handler(uint16_t n);
+void opcode_annn_handler(uint16_t opcode);
 
 // JMP V0, NNN — BNNN
 // Jumps to address offset by V0.
-void opcode_bnnn_handler(uint32_t nnn);
+void opcode_bnnn_handler(uint16_t opcode);
 
 // RND VX, NN – CXNN
 // Stores random value masked by NN into VX.
-void opcode_cxnn_handler(uint8_t reg, uint16_t nn);
+void opcode_cxnn_handler(uint16_t opcode);
 
 // DRW VX, VY, N — DXYN
 // Draws N-byte sprite at coordinates in VX and VY.
-void opcode_dxyn_handler(uint8_t reg_x, uint8_t reg_y, uint8_t n);
+void opcode_dxyn_handler(uint16_t opcode);
 
 // SKP VX — EX9E
 // Skips next instruction when key in VX is pressed.
-void opcode_ex9e_handler(uint8_t reg);
+void opcode_ex9e_handler(uint16_t opcode);
 
 // SKNP VX — EXA1
 // Skips next instruction when key in VX is not pressed.
-void opcode_exa1_handler(uint8_t reg);
+void opcode_exa1_handler(uint16_t opcode);
 
 // LD VX, DT — FX07
 // Loads delay timer into VX.
-void opcode_fx07_handler(uint8_t reg);
+void opcode_fx07_handler(uint16_t opcode);
 
 // LD VX, K — FX0A
 // Blocks until a key is pressed and stores key index.
-void opcode_fx0a_handler(uint8_t reg);
+void opcode_fx0a_handler(uint16_t opcode);
 
 // LD DT, VX — FX15
 // Sets the delay timer from VX.
-void opcode_fx15_handler(uint8_t reg);
+void opcode_fx15_handler(uint16_t opcode);
 
 // LD ST, VX — FX18
 // Sets the sound timer from VX.
-void opcode_fx18_handler(uint8_t reg);
+void opcode_fx18_handler(uint16_t opcode);
 
 // ADD I, VX — FX1E
 // Adds VX to the index register.
-void opcode_fx1e_handler(uint8_t reg);
+void opcode_fx1e_handler(uint16_t opcode);
 
 // LD F, VX — FX29
 // Points I to the sprite for digit in VX.
-void opcode_fx29_handler(uint8_t reg);
+void opcode_fx29_handler(uint16_t opcode);
 
 // LD B, VX — FX33
 // Stores BCD representation of VX at I, I+1, I+2.
-void opcode_fx33_handler(uint8_t reg);
+void opcode_fx33_handler(uint16_t opcode);
 
 // LD [I], VX — FX55
 // Stores registers V0 through VX into memory.
-void opcode_fx55_handler(uint8_t reg);
+void opcode_fx55_handler(uint16_t opcode);
 
 // LD VX, [I] — FX65
 // Loads registers V0 through VX from memory.
-void opcode_fx65_handler(uint8_t reg);
+void opcode_fx65_handler(uint16_t opcode);
 
 #endif
