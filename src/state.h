@@ -10,8 +10,7 @@
 #define SH 32     // Screen Height in pixels
 #define SW 64     // Screen Width in pixels
 
-// Do these require to be lock guarded?
-// [IDEA] Separate thread for handling I/O
+// TODO: Do some of these require to be lock guarded? A separate thread to handle I/O?
 uint8_t memory[EOR] = {0};
 uint8_t registers[16] = {0};
 uint16_t program_counter = 0;
