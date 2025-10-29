@@ -12,16 +12,16 @@
 #define SW 64     // Screen Width in pixels
 
 // TODO: A separate thread to handle I/O
-uint8_t memory[EOR] = {0};
-uint8_t registers[16] = {0};
-uint16_t program_counter = UPS;
-uint16_t index_register = 0;
-uint16_t stack[16] = {0};
-uint8_t stack_pointer = 0;
-uint8_t sound_register = 0;
-uint8_t delay_register = 0;
-bool screen[SW * SH] = {0};
-bool keys_pressed[16] = {0};
+extern uint8_t memory[EOR];
+extern uint8_t registers[16];
+extern uint16_t program_counter;
+extern uint16_t index_register;
+extern uint16_t stack[16];
+extern uint8_t stack_pointer;
+extern uint8_t sound_register;
+extern uint8_t delay_register;
+extern bool screen[SW * SH];
+extern bool keys_pressed[16];
 
 #define VF registers[0xF]
 
