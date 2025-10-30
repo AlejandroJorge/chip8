@@ -9,14 +9,27 @@
     }                                                                          \
   } while (0)
 
-#define RUN_TEST(test_func)                                                    \
+#define INIT_TEST_MODULE(module)                                               \
+  int module##_successful_tests = 0;                                           \
+  int module##_total_tests = 0;                                                \
+  char *module##_test_module_name = #module
+
+#define RUN_TEST(module, test_func)                                            \
   do {                                                                         \
-    opcode_total_tests++;                                                      \
-    printf("[%s] Starting test...\n", #test_func);                             \
+    module##_total_tests++;                                                    \
+    printf("[%s] [%s] ", module##_test_module_name,          \
+           #test_func);                                                        \
     if (test_func()) {                                                         \
-      opcode_successful_tests++;                                               \
-      printf("[%s] ✓ PASSED\n\n", #test_func);                                 \
+      module##_successful_tests++;                                             \
+      printf("✓ PASSED\n\n");                                                  \
     } else {                                                                   \
-      printf("[%s] ✗ FAILED\n\n", #test_func);                                 \
+      printf("✗ FAILED\n\n");                                                  \
     }                                                                          \
   } while (0)
+
+#define PRINT_TEST_SUMMARY(module)                                             \
+  printf("----------------------------------------\n");                        \
+  printf("[%s] Summary: %d / %d tests passed.\n", module##_test_module_name,   \
+         module##_successful_tests, module##_total_tests);                     \
+  printf("----------------------------------------\n\n");                      \
+  return module##_total_tests - module##_successful_tests;

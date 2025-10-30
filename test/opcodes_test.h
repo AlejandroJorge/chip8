@@ -1,3 +1,3 @@
 #pragma once
 
-void test_opcodes();
+int test_opcodes();

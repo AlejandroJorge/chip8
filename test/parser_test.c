@@ -6,8 +6,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-int parser_successful_tests = 0;
-int parser_total_tests = 0;
+INIT_TEST_MODULE(parser);
 
 bool test_parser_00E0() {
     ASSERT(get_opcode_identifier(0x00E0) == OPCODE_00E0);
@@ -59,24 +58,17 @@ bool test_parser_invalid_9XYN() {
 
 
 
-void test_parser() {
+int test_parser() {
     printf("Inisio del tes del sarper\n");
 
-    RUN_TEST(test_parser_00E0);
-    RUN_TEST(test_parser_00EE);
-    RUN_TEST(test_parser_1NNN);
-    RUN_TEST(test_parser_8XY4);
-    RUN_TEST(test_parser_8XYE);
-    RUN_TEST(test_parser_FX55);
-    RUN_TEST(test_parser_invalid_5XYN);
-    RUN_TEST(test_parser_invalid_9XYN);
+    RUN_TEST(parser,test_parser_00E0);
+    RUN_TEST(parser,test_parser_00EE);
+    RUN_TEST(parser,test_parser_1NNN);
+    RUN_TEST(parser,test_parser_8XY4);
+    RUN_TEST(parser,test_parser_8XYE);
+    RUN_TEST(parser,test_parser_FX55);
+    RUN_TEST(parser,test_parser_invalid_5XYN);
+    RUN_TEST(parser,test_parser_invalid_9XYN);
 
-    printf("\nSuccessful tests: %d/%d\n", parser_successful_tests,
-           parser_total_tests);
-
-    if (parser_successful_tests == parser_total_tests) {
-        printf("All tests passed!\n");
-    } else {
-        printf("SOME TESTS FAILED!\n");
-    }
+    PRINT_TEST_SUMMARY(parser);
 }

@@ -8,9 +8,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-// Important for macro definition
-int opcode_successful_tests = 0;
-int opcode_total_tests = 0;
+INIT_TEST_MODULE(opcode);
 
 bool test_00E0_clears_full_screen() {
   for (int i = 0; i < SW * SH; i++)
@@ -398,50 +396,43 @@ bool test_FX65_loads_registers() {
   return true;
 }
 
-void test_opcodes() {
+int test_opcodes() {
   printf("Starting tests for opcodes\n\n");
 
-  RUN_TEST(test_00E0_clears_full_screen);
-  RUN_TEST(test_00EE_restores_address);
-  RUN_TEST(test_1NNN_moves_pc_to_inmediate);
-  RUN_TEST(test_2NNN_moves_pc_and_stores_inmediate);
-  RUN_TEST(test_3XNN_skips_when_equal);
-  RUN_TEST(test_4XNN_skips_when_not_equal);
-  RUN_TEST(test_5XY0_skips_when_registers_equal);
-  RUN_TEST(test_6XNN_loads_immediate);
-  RUN_TEST(test_7XNN_adds_immediate);
-  RUN_TEST(test_8XY0_copies_register);
-  RUN_TEST(test_8XY1_or_registers);
-  RUN_TEST(test_8XY2_and_registers);
-  RUN_TEST(test_8XY3_xor_registers);
-  RUN_TEST(test_8XY4_adds_with_carry);
-  RUN_TEST(test_8XY5_subtracts_sets_borrow);
-  RUN_TEST(test_8XY6_shifts_right);
-  RUN_TEST(test_8XY7_subtracts_reverse);
-  RUN_TEST(test_8XYE_shifts_left);
-  RUN_TEST(test_9XY0_skips_when_registers_differ);
-  RUN_TEST(test_ANNN_loads_index_register);
-  RUN_TEST(test_BNNN_jumps_with_offset);
-  RUN_TEST(test_CXNN_random_and_mask);
-  RUN_TEST(test_DXYN_draws_sprite);
-  RUN_TEST(test_EX9E_skips_on_key_press);
-  RUN_TEST(test_EXA1_skips_on_key_not_pressed);
-  RUN_TEST(test_FX07_loads_delay_timer);
-  RUN_TEST(test_FX0A_blocks_until_key);
-  RUN_TEST(test_FX15_sets_delay_timer);
-  RUN_TEST(test_FX18_sets_sound_timer);
-  RUN_TEST(test_FX1E_adds_to_index_register);
-  RUN_TEST(test_FX29_points_to_sprite);
-  RUN_TEST(test_FX33_stores_bcd_representation);
-  RUN_TEST(test_FX55_stores_registers);
-  RUN_TEST(test_FX65_loads_registers);
+  RUN_TEST(opcode,test_00E0_clears_full_screen);
+  RUN_TEST(opcode,test_00EE_restores_address);
+  RUN_TEST(opcode,test_1NNN_moves_pc_to_inmediate);
+  RUN_TEST(opcode,test_2NNN_moves_pc_and_stores_inmediate);
+  RUN_TEST(opcode,test_3XNN_skips_when_equal);
+  RUN_TEST(opcode,test_4XNN_skips_when_not_equal);
+  RUN_TEST(opcode,test_5XY0_skips_when_registers_equal);
+  RUN_TEST(opcode,test_6XNN_loads_immediate);
+  RUN_TEST(opcode,test_7XNN_adds_immediate);
+  RUN_TEST(opcode,test_8XY0_copies_register);
+  RUN_TEST(opcode,test_8XY1_or_registers);
+  RUN_TEST(opcode,test_8XY2_and_registers);
+  RUN_TEST(opcode,test_8XY3_xor_registers);
+  RUN_TEST(opcode,test_8XY4_adds_with_carry);
+  RUN_TEST(opcode,test_8XY5_subtracts_sets_borrow);
+  RUN_TEST(opcode,test_8XY6_shifts_right);
+  RUN_TEST(opcode,test_8XY7_subtracts_reverse);
+  RUN_TEST(opcode,test_8XYE_shifts_left);
+  RUN_TEST(opcode,test_9XY0_skips_when_registers_differ);
+  RUN_TEST(opcode,test_ANNN_loads_index_register);
+  RUN_TEST(opcode,test_BNNN_jumps_with_offset);
+  RUN_TEST(opcode,test_CXNN_random_and_mask);
+  RUN_TEST(opcode,test_DXYN_draws_sprite);
+  RUN_TEST(opcode,test_EX9E_skips_on_key_press);
+  RUN_TEST(opcode,test_EXA1_skips_on_key_not_pressed);
+  RUN_TEST(opcode,test_FX07_loads_delay_timer);
+  RUN_TEST(opcode,test_FX0A_blocks_until_key);
+  RUN_TEST(opcode,test_FX15_sets_delay_timer);
+  RUN_TEST(opcode,test_FX18_sets_sound_timer);
+  RUN_TEST(opcode,test_FX1E_adds_to_index_register);
+  RUN_TEST(opcode,test_FX29_points_to_sprite);
+  RUN_TEST(opcode,test_FX33_stores_bcd_representation);
+  RUN_TEST(opcode,test_FX55_stores_registers);
+  RUN_TEST(opcode,test_FX65_loads_registers);
 
-  printf("\nSuccessful tests: %d/%d\n", opcode_successful_tests,
-         opcode_total_tests);
-
-  if (opcode_successful_tests == opcode_total_tests) {
-    printf("All tests passed!\n");
-  } else {
-    printf("SOME TESTS FAILED!\n");
-  }
+  PRINT_TEST_SUMMARY(opcode);
 }
