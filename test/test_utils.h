@@ -9,14 +9,14 @@
     }                                                                          \
   } while (0)
 
-#define RUN_TEST(test_func, test_name)                                         \
+#define RUN_TEST(test_func)                                                    \
   do {                                                                         \
     opcode_total_tests++;                                                      \
-    printf("[%s] Starting...\n", test_name);                            \
+    printf("[%s] Starting test...\n", #test_func);                             \
     if (test_func()) {                                                         \
       opcode_successful_tests++;                                               \
-      printf("[%s] ✓ PASSED\n", test_name);                             \
+      printf("[%s] ✓ PASSED\n\n", #test_func);                                 \
     } else {                                                                   \
-      printf("[%s] ✗ FAILED\n", test_name);                             \
+      printf("[%s] ✗ FAILED\n\n", #test_func);                                 \
     }                                                                          \
   } while (0)
