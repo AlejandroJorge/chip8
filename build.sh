@@ -1,3 +1,3 @@
 #!/bin/bash
 
-gcc ./src/*.c -Wall -lraylib -o ./build/chip8
+gcc ./src/*.c -Wall -lraylib -Iinclude -o ./build/chip8

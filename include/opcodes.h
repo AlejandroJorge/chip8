@@ -1,5 +1,4 @@
-#ifndef OPCODES_H
-#define OPCODES_H
+#pragma once
 
 #include <stdint.h>
 
@@ -175,5 +174,3 @@ void opcode_fx55_handler(uint16_t opcode);
 // LD VX, [I] — FX65
 // Loads registers V0 through VX from memory.
 void opcode_fx65_handler(uint16_t opcode);
-
-#endif

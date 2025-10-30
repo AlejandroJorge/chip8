@@ -1,5 +1,5 @@
-#include "../src/opcodes.h"
-#include "../src/state.h"
+#include "opcodes.h"
+#include "state.h"
 #include <stdint.h>
 #include <stdio.h>
 

@@ -1,5 +1,4 @@
-#ifndef STATE_H
-#define STATE_H
+#pragma once
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -24,5 +23,3 @@ extern bool screen[SW * SH];
 extern bool keys_pressed[16];
 
 #define VF registers[0xF]
-
-#endif

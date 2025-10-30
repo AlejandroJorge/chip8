@@ -1,6 +1,3 @@
-#ifndef OPCODES_TEST_H
-#define OPCODES_TEST_H
+#pragma once
 
 void test_opcodes();
-
-#endif

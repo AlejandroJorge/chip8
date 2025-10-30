@@ -1,5 +1,6 @@
 #!/bin/bash
 
-gcc $(find ./src -name "*.c" -not -name "main.c") ./test/*.c -o ./build/test
+mkdir -p build
+gcc $(find ./src -name "*.c" -not -name "main.c") ./test/*.c -Iinclude -lraylib -o ./build/test
 ./build/test
 rm ./build/test
