@@ -4,13 +4,14 @@
 
 #include "opcodes.h"
 #include "parser.h"
+#include "screen.h"
 
 int main() {
 
   // TODO: Figure out where to initialize all stuff (future pthreads and raylib)
   srand(0);
   init_parser("example.c8");
-
+  init_screen();
   uint16_t curr_opcode;
   while ((curr_opcode = get_next_opcode())) {
     switch (get_opcode_identifier(curr_opcode)) {

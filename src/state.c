@@ -8,5 +8,5 @@ uint16_t stack[16] = {0};
 uint8_t stack_pointer = 0;
 uint8_t sound_register = 0;
 uint8_t delay_register = 0;
-bool screen[SW * SH] = {0};
+bool screen[SW * SH] = {false};
 bool keys_pressed[16] = {0};
