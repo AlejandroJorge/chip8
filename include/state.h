@@ -10,7 +10,6 @@
 #define SH 32     // Screen Height in pixels
 #define SW 64     // Screen Width in pixels
 
-// TODO: A separate thread to handle I/O
 extern uint8_t memory[EOR];
 extern uint8_t registers[16];
 extern uint16_t program_counter;

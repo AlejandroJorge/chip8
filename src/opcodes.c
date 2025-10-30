@@ -16,8 +16,8 @@ void opcode_00e0_handler(uint16_t opcode) {
 // RET — 00EE
 // Restores the return address from the stack.
 void opcode_00ee_handler(uint16_t opcode) {
+  stack_pointer--;
   program_counter = stack[stack_pointer];
-  stack_pointer -= 2;
 }
 
 // JMP — 1NNN
@@ -31,8 +31,8 @@ void opcode_1nnn_handler(uint16_t opcode) {
 // Jumps to subroutine and stores the return address.
 void opcode_2nnn_handler(uint16_t opcode) {
   uint16_t n = opcode & 0x0FFF;
-  stack_pointer += 2;
   stack[stack_pointer] = program_counter;
+  stack_pointer++;
   program_counter = n;
 }
 
@@ -160,7 +160,7 @@ void opcode_8xy7_handler(uint16_t opcode) {
 void opcode_8xye_handler(uint16_t opcode) {
   uint8_t n1_register = (opcode & 0x0F00) >> 8,
           n2_register = (opcode & 0x00F0) >> 4;
-  VF = registers[n1_register] & 0x80;
+  VF = (registers[n1_register] & 0x80) >> 7;
   registers[n1_register] = registers[n1_register] << 1;
 }
 
@@ -331,7 +331,7 @@ void opcode_fx33_handler(uint16_t opcode) {
 // Stores registers V0 through VX into memory.
 void opcode_fx55_handler(uint16_t opcode) {
   uint8_t reg = (opcode & 0x0F00) >> 8;
-  for (uint8_t i = 0; i < reg; i++)
+  for (uint8_t i = 0; i <= reg; i++)
     memory[index_register + i] = registers[i];
 }
 
@@ -339,6 +339,6 @@ void opcode_fx55_handler(uint16_t opcode) {
 // Loads registers V0 through VX from memory.
 void opcode_fx65_handler(uint16_t opcode) {
   uint8_t reg = (opcode & 0x0F00) >> 8;
-  for (uint8_t i = 0; i < reg; i++)
+  for (uint8_t i = 0; i <= reg; i++)
     registers[i] = memory[index_register + i];
 }

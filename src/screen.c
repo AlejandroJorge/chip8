@@ -4,12 +4,16 @@
 #include "state.h"
 
 #define SCALE 20
+#define FPS 60
+#define CPF 12
 
 void init_screen() {
     const int screen_width = SW * SCALE;
     const int screen_height = SH * SCALE;
 
     InitWindow(screen_width, screen_height, "Chimpocho");
+
+    SetTargetFPS(FPS);
 
     Rectangle screen_pixels[SW*SH];
     for(int i = 0; i < SW; i++) {
@@ -22,10 +26,16 @@ void init_screen() {
     while(!WindowShouldClose()) {
         BeginDrawing();
 
-        cpu_cycle();
+        for(int i=0; i < CPF; i++) {
+            cpu_cycle();
+        }
 
+        if(delay_register > 0) delay_register--;
+        if(sound_register > 0) sound_register--;
+
+        ClearBackground(BLACK);
         for(int i = 0; i < SW*SH; i++) {
-            DrawRectangleRec(screen_pixels[i], screen[i] ? GREEN : WHITE);
+            if(screen[i]) DrawRectangleRec(screen_pixels[i], GREEN);
         }
 
         if(IsKeyDown(KEY_ONE)) keys_pressed[0] = true;
