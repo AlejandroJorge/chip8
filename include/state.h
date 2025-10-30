@@ -23,3 +23,6 @@ extern bool screen[SW * SH];
 extern bool keys_pressed[16];
 
 #define VF registers[0xF]
+
+void load_fonts();
+void cpu_cycle();

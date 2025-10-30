@@ -7,7 +7,7 @@
 #include "state.h"
 
 // Reads ROM and loads it into user memory space
-int init_parser(char *filename) {
+int load_rom(char *filename) {
     int fd;
     if ((fd = open(filename, O_RDONLY)) == -1) {
         perror("Error opening file");
