@@ -151,7 +151,7 @@ void opcode_8xy7_handler(uint16_t opcode) {
   } else {
     VF = 0;
   }
-  registers[n2_register] -= registers[n1_register];
+  registers[n1_register] = registers[n2_register] - registers[n1_register];
 }
 
 // SHL VX {, VY} — 8XYE
@@ -304,16 +304,15 @@ void opcode_fx33_handler(uint16_t opcode) {
   uint8_t units = registers[reg] - hundreds * 100 - tens * 10;
   memory[index_register] = hundreds;
   memory[index_register + 1] = tens;
-  memory[index_register + 2] = registers[reg];
+  memory[index_register + 2] = units;
 }
 
 // LD [I], VX — FX55
 // Stores registers V0 through VX into memory.
 void opcode_fx55_handler(uint16_t opcode) {
   uint8_t reg = (opcode & 0x0F00) >> 8;
-  reg = reg & 0x0F;
   for (uint8_t i = 0; i < reg; i++)
-    memory[index_register + i] = registers[reg + i];
+    memory[index_register + i] = registers[i];
 }
 
 // LD VX, [I] — FX65
@@ -321,5 +320,5 @@ void opcode_fx55_handler(uint16_t opcode) {
 void opcode_fx65_handler(uint16_t opcode) {
   uint8_t reg = (opcode & 0x0F00) >> 8;
   for (uint8_t i = 0; i < reg; i++)
-    registers[reg + i] = memory[index_register + i];
+    registers[i] = memory[index_register + i];
 }

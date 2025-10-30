@@ -2,6 +2,7 @@
 #include "opcodes.h"
 #include "state.h"
 #include "test_utils.h"
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -12,7 +13,6 @@ int opcode_successful_tests = 0;
 int opcode_total_tests = 0;
 
 bool test_00E0_clears_full_screen() {
-  // Fill screen with 1's
   for (int i = 0; i < SW * SH; i++)
     screen[i] = true;
 
@@ -26,15 +26,15 @@ bool test_00E0_clears_full_screen() {
   return true;
 }
 
-bool test_00EE_restores_address() { 
+bool test_00EE_restores_address() {
   program_counter = 0x02AF;
   stack_pointer = 4;
-  stack[stack_pointer-2] = 0x0120;
+  stack[stack_pointer - 2] = 0x0120;
 
   opcode_00ee_handler(0x00EE);
   ASSERT(stack_pointer == 2);
   ASSERT(program_counter == 0x0120);
-  
+
   return true;
 }
 
@@ -48,36 +48,36 @@ bool test_1NNN_moves_pc_to_inmediate() {
   return true;
 }
 
-bool test_2NNN_moves_pc_and_stores_inmediate() { 
+bool test_2NNN_moves_pc_and_stores_inmediate() {
   stack_pointer = 2;
 
   opcode_2nnn_handler(0x2124);
   ASSERT(stack_pointer == 4);
   ASSERT(stack[stack_pointer - 2] == 0x124);
-  return true; 
+  return true;
 }
 
-bool test_3XNN_skips_when_equal() { 
+bool test_3XNN_skips_when_equal() {
   program_counter = 0x0100;
   registers[0x0A] = 0x42;
-  
+
   opcode_3xnn_handler(0x3A42);
 
   ASSERT(program_counter == 0x0102);
-  return true; 
+  return true;
 }
 
-bool test_4XNN_skips_when_not_equal() { 
+bool test_4XNN_skips_when_not_equal() {
   program_counter = 0x0100;
   registers[0x0A] = 0x40;
-  
+
   opcode_4xnn_handler(0x4A42);
 
   ASSERT(program_counter == 0x0102);
-  return true; 
+  return true;
 }
 
-bool test_5XY0_skips_when_registers_equal() { 
+bool test_5XY0_skips_when_registers_equal() {
   registers[0x04] = 0x3C;
   registers[0x0B] = 0x3C;
   program_counter = 0x0100;
@@ -88,7 +88,7 @@ bool test_5XY0_skips_when_registers_equal() {
   return true;
 }
 
-bool test_6XNN_loads_immediate() { 
+bool test_6XNN_loads_immediate() {
   registers[0x04] = 0xFF;
 
   opcode_6xnn_handler(0x64AC);
@@ -97,25 +97,25 @@ bool test_6XNN_loads_immediate() {
   return true;
 }
 
-bool test_7XNN_adds_immediate() { 
-  registers[0x0A] = 0x0D;
-  
-  opcode_7xnn_handler(0x7A52);
-  ASSERT(registers[0x0A] == 0x60);
+bool test_7XNN_adds_immediate() {
+  registers[0x0A] = 0x34;
+
+  opcode_7xnn_handler(0x7A22);
+  ASSERT(registers[0x0A] == 0x56);
 
   return true;
 }
 
-bool test_8XY0_copies_register() { 
+bool test_8XY0_copies_register() {
   registers[0x0B] = 0x23;
   registers[0x04] = 0x1F;
 
   opcode_8xy0_handler(0x84B0);
   ASSERT(registers[0x04] == registers[0x0B]);
-  return true; 
+  return true;
 }
 
-bool test_8XY1_or_registers() { 
+bool test_8XY1_or_registers() {
   registers[0x0B] = 0x23;
   registers[0x04] = 0x1F;
   uint8_t expected = registers[0x0B] | registers[0x04];
@@ -125,74 +125,252 @@ bool test_8XY1_or_registers() {
   return true;
 }
 
-// TODO: Implement
-bool test_8XY2_and_registers() { return false; }
+bool test_8XY2_and_registers() {
+  registers[0x0B] = 0x23;
+  registers[0x04] = 0x1F;
+  uint8_t expected = registers[0x0B] & registers[0x04];
+
+  opcode_8xy2_handler(0x84B1);
+  ASSERT(registers[0x04] == expected);
+  return true;
+}
+
+bool test_8XY3_xor_registers() {
+  registers[0x0B] = 0x23;
+  registers[0x04] = 0x1F;
+  uint8_t expected = registers[0x0B] ^ registers[0x04];
+
+  opcode_8xy3_handler(0x84B1);
+  ASSERT(registers[0x04] == expected);
+  return true;
+}
+
+bool test_8XY4_adds_with_carry() {
+  registers[0x05] = 0xFF;
+  registers[0x0A] = 0x02;
+
+  opcode_8xy4_handler(0x85A4);
+  ASSERT(registers[0x05] == 0x01);
+  ASSERT(VF == 1);
+  return true;
+}
+
+bool test_8XY5_subtracts_sets_borrow() {
+  registers[0x05] = 0x10;
+  registers[0x0A] = 0x20;
+
+  opcode_8xy5_handler(0x85A5);
+  ASSERT(registers[0x05] == 0xF0);
+  ASSERT(VF == 0);
+  return true;
+}
+
+bool test_8XY6_shifts_right() {
+  registers[0x0B] = 0x23;
+  uint8_t lsb = registers[0x0B] & 0x01;
+  uint8_t expected = registers[0x0B] >> 1;
+
+  opcode_8xy6_handler(0x8B46);
+  ASSERT(VF == lsb);
+  ASSERT(registers[0x0B] == expected);
+  return true;
+}
+
+bool test_8XY7_subtracts_reverse() {
+  registers[0x04] = 0x10;
+  registers[0x0B] = 0x30;
+
+  opcode_8xy7_handler(0x84B7);
+  ASSERT(registers[0x04] == 0x20);
+  ASSERT(VF == 1);
+
+  return true;
+}
+
+bool test_8XYE_shifts_left() {
+  registers[0x0B] = 0x23;
+  uint8_t msb = (registers[0x0B] & 0x80) >> 7;
+  uint8_t expected = registers[0x0B] << 1;
+
+  opcode_8xye_handler(0x8B46);
+  ASSERT(VF == msb);
+  ASSERT(registers[0x0B] == expected);
+  return true;
+}
+
+bool test_9XY0_skips_when_registers_differ() {
+  registers[0x0B] = 0x23;
+  registers[0x04] = 0x31;
+  program_counter = 0x0100;
+
+  opcode_9xy0_handler(0x84B6);
+  ASSERT(program_counter == 0x0102);
+  return true;
+}
+
+bool test_ANNN_loads_index_register() {
+  index_register = 0x0124;
+
+  opcode_annn_handler(0xA6F2);
+  ASSERT(index_register == 0x06F2);
+  return true;
+}
+
+bool test_BNNN_jumps_with_offset() {
+  registers[0x00] = 0x24;
+
+  opcode_bnnn_handler(0xB200);
+  ASSERT(program_counter == 0x0224);
+  return true;
+}
+
+bool test_CXNN_random_and_mask() { 
+  for (int i = 0; i < 40; i++) {
+    opcode_cxnn_handler(0xC40F);
+    ASSERT(registers[0x04] <= 0x0F);
+  }
+  return true;
+}
 
 // TODO: Implement
-bool test_8XY3_xor_registers() { return false; }
+bool test_DXYN_draws_sprite() { return true; }
 
-// TODO: Implement
-bool test_8XY4_adds_with_carry() { return false; }
+bool test_EX9E_skips_on_key_press() {
+  keys_pressed[0x0A] = true;
+  program_counter = 0x0100;
 
-// TODO: Implement
-bool test_8XY5_subtracts_sets_borrow() { return false; }
+  opcode_ex9e_handler(0xEA9E);
+  ASSERT(program_counter == 0x0102);
+  return true;
+}
 
-// TODO: Implement
-bool test_8XY6_shifts_right() { return false; }
+bool test_EXA1_skips_on_key_not_pressed() {
+  keys_pressed[0x0B] = false;
+  program_counter = 0x0100;
 
-// TODO: Implement
-bool test_8XY7_subtracts_reverse() { return false; }
+  opcode_exa1_handler(0xEB9E);
+  ASSERT(program_counter == 0x0102);
+  return true;
+}
 
-// TODO: Implement
-bool test_8XYE_shifts_left() { return false; }
+bool test_FX07_loads_delay_timer() {
+  registers[0x08] = 0xF2;
+  delay_register = 0x40;
 
-// TODO: Implement
-bool test_9XY0_skips_when_registers_differ() { return false; }
+  opcode_fx07_handler(0xF807);
+  ASSERT(registers[0x08] == delay_register);
+  return true;
+}
 
-// TODO: Implement
-bool test_ANNN_loads_index_register() { return false; }
+bool test_FX0A_blocks_until_key() {
+  registers[0x0A] = 0xFF;
+  program_counter = 0x0108;
+  for (int i = 0; i < 16; i++)
+    keys_pressed[i] = false;
 
-// TODO: Implement
-bool test_BNNN_jumps_with_offset() { return false; }
+  opcode_fx0a_handler(0xFA0A);
+  ASSERT(program_counter == 0x0106);
+  ASSERT(registers[0x0A] != 0x0D);
+  opcode_fx0a_handler(0xFA0A);
+  ASSERT(program_counter == 0x0104);
+  ASSERT(registers[0x0A] != 0x0D);
+  opcode_fx0a_handler(0xFA0A);
+  ASSERT(program_counter == 0x0102);
+  ASSERT(registers[0x0A] != 0x0D);
+  opcode_fx0a_handler(0xFA0A);
+  ASSERT(program_counter == 0x0100);
+  ASSERT(registers[0x0A] != 0x0D);
 
-// TODO: Implement
-bool test_CXNN_random_and_mask() { return false; }
+  keys_pressed[0x0D] = true;
 
-// TODO: Implement
-bool test_DXYN_draws_sprite() { return false; }
+  opcode_fx0a_handler(0xFA0A);
+  ASSERT(program_counter == 0x0100);
+  ASSERT(registers[0x0A] = 0x0D);
+  return true;
+}
 
-// TODO: Implement
-bool test_EX9E_skips_on_key_press() { return false; }
+bool test_FX15_sets_delay_timer() {
+  registers[0x08] = 0xF2;
+  delay_register = 0x40;
 
-// TODO: Implement
-bool test_EXA1_skips_on_key_not_pressed() { return false; }
+  opcode_fx15_handler(0xF807);
+  ASSERT(registers[0x08] == delay_register);
+  return true;
+}
 
-// TODO: Implement
-bool test_FX07_loads_delay_timer() { return false; }
+bool test_FX18_sets_sound_timer() {
+  registers[0x08] = 0xF2;
+  sound_register = 0x40;
 
-// TODO: Implement
-bool test_FX0A_blocks_until_key() { return false; }
+  opcode_fx18_handler(0xF807);
+  ASSERT(registers[0x08] == sound_register);
+  return true;
+}
 
-// TODO: Implement
-bool test_FX15_sets_delay_timer() { return false; }
+bool test_FX1E_adds_to_index_register() {
+  index_register = 0x0100;
+  registers[0x0A] = 0x36;
+  uint16_t expected = index_register + registers[0x0A];
 
-// TODO: Implement
-bool test_FX18_sets_sound_timer() { return false; }
+  opcode_fx1e_handler(0xFA1E);
+  ASSERT(index_register == expected);
+  return true;
+}
 
-// TODO: Implement
-bool test_FX1E_adds_to_index_register() { return false; }
+bool test_FX29_points_to_sprite() { 
+  registers[0x06] = 0x05;
 
-// TODO: Implement
-bool test_FX29_points_to_sprite() { return false; }
+  opcode_fx29_handler(0xF629);
+  ASSERT(index_register == registers[0x06] * 0x05);
+  return true;
+}
 
-// TODO: Implement
-bool test_FX33_stores_bcd_representation() { return false; }
+bool test_FX33_stores_bcd_representation() {
+  index_register = 0x220;
+  memory[index_register] = 0;
+  memory[index_register + 1] = 0;
+  memory[index_register + 2] = 0;
 
-// TODO: Implement
-bool test_FX55_stores_registers() { return false; }
+  registers[0x0C] = 125;
 
-// TODO: Implement
-bool test_FX65_loads_registers() { return false; }
+  opcode_fx33_handler(0xFC33);
+  ASSERT(memory[index_register] == 1);
+  ASSERT(memory[index_register + 1] == 2);
+  ASSERT(memory[index_register + 2] == 5);
+  return true;
+}
+
+bool test_FX55_stores_registers() {
+  index_register = 0x0300;
+  for (int i = 0; i < 15; i++)
+    registers[i] = i;
+  for (int i = 0; i < 15; i++)
+    memory[index_register + i] = 0;
+
+  opcode_fx55_handler(0xFB55);
+
+  bool registers_match_memory = true;
+  for (int i = 0; i < 0x0B; i++)
+    registers_match_memory &= memory[index_register + i] == registers[i];
+  ASSERT(registers_match_memory);
+  return true;
+}
+
+bool test_FX65_loads_registers() {
+  index_register = 0x0100;
+  for (int i = 0; i < 15; i++)
+    memory[index_register + i] = i;
+  for (int i = 0; i < 15; i++)
+    registers[i] = 0;
+
+  opcode_fx65_handler(0xFB65);
+
+  bool registers_match_memory = true;
+  for (int i = 0; i < 0x0B; i++)
+    registers_match_memory &= memory[index_register + i] == registers[i];
+  ASSERT(registers_match_memory);
+  return true;
+}
 
 void test_opcodes() {
   printf("Starting tests for opcodes\n\n");
