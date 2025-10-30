@@ -1,4 +1,5 @@
 #include "state.h"
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -201,7 +202,26 @@ void opcode_dxyn_handler(uint16_t opcode) {
           n = opcode & 0x000F;
   uint8_t x = registers[reg_x] % SW;
   uint8_t y = registers[reg_y] % SH;
-  // TODO: Finish this implementation
+
+  VF = 0;
+
+  for (uint8_t row = 0; row < n; row++) {
+    uint8_t sprite_byte = memory[index_register + row];
+    uint8_t pixel_y = (y + row) % SH;
+
+    for (uint8_t col = 0; col < 8; col++) {
+      uint8_t pixel_x = (x + col) % SW;
+
+      bool sprite_pixel = (sprite_byte >> (7 - col)) & 1;
+      if (sprite_pixel) {
+        uint16_t screen_idx = pixel_y * SW + pixel_x;
+        if (screen[screen_idx])
+          VF = 1;
+
+        screen[screen_idx] ^= true;
+      }
+    }
+  }
 }
 
 // SKP VX — EX9E

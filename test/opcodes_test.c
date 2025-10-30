@@ -29,7 +29,7 @@ bool test_00E0_clears_full_screen() {
 bool test_00EE_restores_address() {
   program_counter = 0x02AF;
   stack_pointer = 4;
-  stack[stack_pointer - 2] = 0x0120;
+  stack[stack_pointer] = 0x0120;
 
   opcode_00ee_handler(0x00EE);
   ASSERT(stack_pointer == 2);
@@ -50,10 +50,12 @@ bool test_1NNN_moves_pc_to_inmediate() {
 
 bool test_2NNN_moves_pc_and_stores_inmediate() {
   stack_pointer = 2;
+  program_counter = 0x0542;
 
   opcode_2nnn_handler(0x2124);
   ASSERT(stack_pointer == 4);
-  ASSERT(stack[stack_pointer - 2] == 0x124);
+  ASSERT(stack[stack_pointer] == 0x0542);
+  ASSERT(program_counter == 0x0124);
   return true;
 }
 
@@ -224,7 +226,7 @@ bool test_BNNN_jumps_with_offset() {
   return true;
 }
 
-bool test_CXNN_random_and_mask() { 
+bool test_CXNN_random_and_mask() {
   for (int i = 0; i < 40; i++) {
     opcode_cxnn_handler(0xC40F);
     ASSERT(registers[0x04] <= 0x0F);
@@ -232,8 +234,32 @@ bool test_CXNN_random_and_mask() {
   return true;
 }
 
-// TODO: Implement
-bool test_DXYN_draws_sprite() { return true; }
+bool test_DXYN_draws_sprite() {
+  for (int i = 0; i < SW * SH; i++)
+    screen[i] = false;
+
+  index_register = 0x0300;
+  memory[0x0300] = 0b11110000;
+  memory[0x0301] = 0b00001111;
+
+  registers[0x04] = 5;
+  registers[0x0B] = 5;
+
+  screen[5 * SW + 6] = true;
+
+  opcode_dxyn_handler(0xD4B2);
+
+  ASSERT(VF == 1);
+  ASSERT(screen[5 * SW + 6] == false);
+
+  uint8_t row_pixels = 0;
+  for (int col = 0; col < 8; col++) {
+    row_pixels |= (screen[5 * SW + 5 + col] << (7 - col));
+  }
+  ASSERT(row_pixels == 0b10110000);
+
+  return true;
+}
 
 bool test_EX9E_skips_on_key_press() {
   keys_pressed[0x0A] = true;
@@ -317,7 +343,7 @@ bool test_FX1E_adds_to_index_register() {
   return true;
 }
 
-bool test_FX29_points_to_sprite() { 
+bool test_FX29_points_to_sprite() {
   registers[0x06] = 0x05;
 
   opcode_fx29_handler(0xF629);
