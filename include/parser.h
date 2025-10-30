@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "opcodes.h"
 
-int init_parser(char* filename);
+int load_rom(char* filename);
 
 uint16_t get_next_opcode();
 

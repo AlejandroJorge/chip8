@@ -21,11 +21,13 @@ void init_screen() {
 
     while(!WindowShouldClose()) {
         BeginDrawing();
+
+        cpu_cycle();
+
         for(int i = 0; i < SW*SH; i++) {
             DrawRectangleRec(screen_pixels[i], screen[i] ? GREEN : WHITE);
         }
 
-        // TODO: Implement ts in another thread ahahahah
         if(IsKeyDown(KEY_ONE)) keys_pressed[0] = true;
         if(IsKeyDown(KEY_TWO)) keys_pressed[1] = true;
         if(IsKeyDown(KEY_THREE)) keys_pressed[2] = true;
