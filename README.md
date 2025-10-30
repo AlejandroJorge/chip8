@@ -2,7 +2,7 @@
 
 Currently implemented
 
-- Opcodes handlers -> No tests
+- Opcodes handlers -> Single case tests
 - Parsing -> No tests
 - Main (and rendering) loop
 - Fonts loaded
@@ -10,6 +10,7 @@ Currently implemented
 
 To be implemented
 
-- Tests for Opcodes
+- Draw opcode handler
+- More complete opcode handlers (more than happy path)
 - Tests for Parsing
 - Sound
