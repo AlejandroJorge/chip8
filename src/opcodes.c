@@ -250,41 +250,18 @@ void opcode_fx07_handler(uint16_t opcode) {
 // LD VX, K — FX0A
 // Blocks until a key is pressed and stores key index.
 void opcode_fx0a_handler(uint16_t opcode) {
-  uint8_t reg = (opcode & 0x0F00) >> 8;
-  if (keys_pressed[0])
-    registers[reg] = 0;
-  else if (keys_pressed[1])
-    registers[reg] = 1;
-  else if (keys_pressed[2])
-    registers[reg] = 2;
-  else if (keys_pressed[3])
-    registers[reg] = 3;
-  else if (keys_pressed[4])
-    registers[reg] = 4;
-  else if (keys_pressed[5])
-    registers[reg] = 5;
-  else if (keys_pressed[6])
-    registers[reg] = 6;
-  else if (keys_pressed[7])
-    registers[reg] = 7;
-  else if (keys_pressed[8])
-    registers[reg] = 8;
-  else if (keys_pressed[9])
-    registers[reg] = 9;
-  else if (keys_pressed[10])
-    registers[reg] = 10;
-  else if (keys_pressed[11])
-    registers[reg] = 11;
-  else if (keys_pressed[12])
-    registers[reg] = 12;
-  else if (keys_pressed[13])
-    registers[reg] = 13;
-  else if (keys_pressed[14])
-    registers[reg] = 14;
-  else if (keys_pressed[15])
-    registers[reg] = 15;
-  else
-    program_counter -= 2;
+    uint8_t reg = (opcode & 0x0F00) >> 8;
+    bool key_was_pressed = false;
+
+    for (int i = 0; i < 16; i++) {
+        if (keys_pressed[i]) {
+            registers[reg] = i;
+            key_was_pressed = true;
+            break;
+        }
+    }
+
+    if (!key_was_pressed) program_counter -= 2;
 }
 
 // LD DT, VX — FX15

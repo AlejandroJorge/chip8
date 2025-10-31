@@ -5,7 +5,7 @@
 
 #define SCALE 20
 #define FPS 60
-#define CPF 12
+#define CPF 8
 
 void init_screen() {
     const int screen_width = SW * SCALE;
@@ -22,21 +22,8 @@ void init_screen() {
             screen_pixels[i+j*SW] = r;
         }
     }
-
+    int h = 0;
     while(!WindowShouldClose()) {
-        BeginDrawing();
-
-        for(int i=0; i < CPF; i++) {
-            cpu_cycle();
-        }
-
-        if(delay_register > 0) delay_register--;
-        if(sound_register > 0) sound_register--;
-
-        ClearBackground(BLACK);
-        for(int i = 0; i < SW*SH; i++) {
-            if(screen[i]) DrawRectangleRec(screen_pixels[i], GREEN);
-        }
 
         if(IsKeyDown(KEY_ONE)) keys_pressed[0] = true;
         if(IsKeyDown(KEY_TWO)) keys_pressed[1] = true;
@@ -72,7 +59,21 @@ void init_screen() {
         if(IsKeyUp(KEY_C)) keys_pressed[14] = false;
         if(IsKeyUp(KEY_V)) keys_pressed[15] = false;
 
-        EndDrawing();
+        if(h%10 == 0) {
+            BeginDrawing();
+            ClearBackground(BLACK);
+            for(int i = 0; i < SW*SH; i++) {
+                if(screen[i]) DrawRectangleRec(screen_pixels[i], GREEN);
+            }
+            EndDrawing();
+        }
+
+        cpu_cycle();
+
+        if(delay_register > 0) delay_register--;
+        if(sound_register > 0) sound_register--;
+
+        h++;
     }
 
     CloseWindow();
