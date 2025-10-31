@@ -26,8 +26,8 @@ bool test_00E0_clears_full_screen() {
 
 bool test_00EE_restores_address() {
   program_counter = 0x02AF;
-  stack_pointer = 4;
-  stack[stack_pointer] = 0x0120;
+  stack_pointer = 3;
+  stack[stack_pointer - 1] = 0x0120;
 
   opcode_00ee_handler(0x00EE);
   ASSERT(stack_pointer == 2);
@@ -51,8 +51,8 @@ bool test_2NNN_moves_pc_and_stores_inmediate() {
   program_counter = 0x0542;
 
   opcode_2nnn_handler(0x2124);
-  ASSERT(stack_pointer == 4);
-  ASSERT(stack[stack_pointer] == 0x0542);
+  ASSERT(stack_pointer == 3);
+  ASSERT(stack[stack_pointer - 1] == 0x0542);
   ASSERT(program_counter == 0x0124);
   return true;
 }
