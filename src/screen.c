@@ -1,3 +1,4 @@
+#include <math.h>
 #include <raylib.h>
 
 #include "screen.h"
@@ -5,8 +6,33 @@
 
 #define SCALE 20
 #define FPS 60
+
+#define MAX_SAMPLES_PER_UPDATE 4096
+#define MAX_SAMPLES 512
+#define SAMPLE_RATE 44100
+#define SAMPLE_SIZE 16
+
 #define CPU_HZ 600
 #define CPU_TIME_STEP (1.0f / CPU_HZ)
+
+float audioFrequency = 440.f;
+float frequency = 440.f;
+float sineIdx = 0.0f;
+
+void AudioInputCallback(void *buffer, unsigned int frames) {
+
+  audioFrequency = frequency + (audioFrequency - frequency) * 0.95f;
+
+  float incr = audioFrequency / 44100.0f;
+  short *d = (short *)buffer;
+
+  for (unsigned int i = 0; i < frames; i++) {
+    d[i] = (short)(32000.0f * sinf(2 * PI * sineIdx));
+    sineIdx += incr;
+    if (sineIdx > 1.0f)
+      sineIdx -= 1.0f;
+  }
+}
 
 void init_screen() {
   const int screen_width = SW * SCALE;
@@ -15,6 +41,14 @@ void init_screen() {
   InitWindow(screen_width, screen_height, "Chimpocho");
 
   SetTargetFPS(FPS);
+
+  InitAudioDevice();
+
+  SetAudioStreamBufferSizeDefault(MAX_SAMPLES_PER_UPDATE);
+
+  AudioStream stream = LoadAudioStream(SAMPLE_RATE, SAMPLE_SIZE, 1);
+
+  SetAudioStreamCallback(stream, AudioInputCallback);
 
   Rectangle screen_pixels[SW * SH];
   for (int i = 0; i < SW; i++) {
@@ -115,9 +149,18 @@ void init_screen() {
 
     if (delay_register > 0)
       delay_register--;
-    if (sound_register > 0)
+    if (sound_register > 0) {
+      PlayAudioStream(stream);
       sound_register--;
+      if (sound_register == 0) {
+        StopAudioStream(stream);
+      }
+    }
   }
+
+  UnloadAudioStream(stream);
+
+  CloseAudioDevice();
 
   CloseWindow();
 }
