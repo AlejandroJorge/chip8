@@ -10,7 +10,7 @@
 int main(int argc, char *argv[]) {
 
     if(argc != 2) {
-        perror("Eres mierda\n");
+        perror("ROM not provided as first argument\n");
         exit(1);
     }
 
